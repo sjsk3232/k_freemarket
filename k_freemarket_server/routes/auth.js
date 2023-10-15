@@ -16,6 +16,36 @@ const router = express.Router();
 /************************************ 메일 인증번호 발급 ************************************/
 router.get("/mailAuth", emailAuth);
 
+/************************************ 비밀번호 수정 메일 인증번호 발급 ************************************/
+router.get("/mailAuthChangePw", async (req, res, next) => {
+  const { id, emailId } = req.body;
+
+  try {
+    const exUser = await user.findByPk(id);
+
+    if (!exUser) {
+      res.json({
+        result: false,
+        message: "회원이 존재하지 않습니다.",
+      });
+      return;
+    }
+    if (exUser.email !== emailId + "@kumoh.ac.kr") {
+      res.json({
+        result: false,
+        message:
+          "입력한 이메일이 회원 정보에 저장된 이메일과 일치하지 않습니다.",
+      });
+      return;
+    }
+    emailAuth(req, res);
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+});
+/************************************ 비로그인 메일 인증번호 발급 END ************************************/
+
 /************************************ 발급한 토큰 테스트 ************************************/
 router.get("/tokenTest", verifyToken, (req, res) => {
   res.json(req.decoded);
