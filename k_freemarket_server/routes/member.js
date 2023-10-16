@@ -214,8 +214,7 @@ router.get("/search", async (req, res, next) => {
       });
     }
 
-    const totalCount = await user.findAll({
-      attributes: [[fn("COUNT", col("id")), "count"]],
+    const totalCount = await user.count({
       where: whereCondition,
     });
 
@@ -224,7 +223,7 @@ router.get("/search", async (req, res, next) => {
       result: true,
       message: "회원 검색이 완료되었습니다.",
       found: foundUsers,
-      totalCount: totalCount[0].dataValues.count,
+      totalCount: totalCount,
     });
   } catch (error) {
     console.error(error);
