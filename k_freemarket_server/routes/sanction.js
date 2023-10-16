@@ -137,8 +137,7 @@ router.get("/searchForAdmin", verifyAdminToken, async (req, res, next) => {
       });
     }
 
-    const totalCount = await user_sanction.findAll({
-      attributes: [[fn("COUNT", col("id")), "count"]],
+    const totalCount = await user_sanction.count({
       where: whereCondition,
     });
 
@@ -146,7 +145,7 @@ router.get("/searchForAdmin", verifyAdminToken, async (req, res, next) => {
       result: true,
       message: "회원 제재 목록 검색이 완료되었습니다.",
       found: foundSanctions,
-      totalCount: totalCount[0].dataValues.count,
+      totalCount: totalCount,
     });
   } catch (error) {
     console.error(error);
@@ -182,8 +181,7 @@ router.get("/searchForMember", verifyToken, async (req, res, next) => {
       });
     }
 
-    const totalCount = await user_sanction.findAll({
-      attributes: [[fn("COUNT", col("id")), "count"]],
+    const totalCount = await user_sanction.count({
       where: whereCondition,
     });
 
@@ -191,7 +189,7 @@ router.get("/searchForMember", verifyToken, async (req, res, next) => {
       result: true,
       message: "회원 제재 목록 검색이 완료되었습니다.",
       found: foundSanctions,
-      totalCount: totalCount[0].dataValues.count,
+      totalCount: totalCount,
     });
   } catch (error) {
     console.error(error);
