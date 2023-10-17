@@ -46,6 +46,7 @@ app.use(passport.session());
 app.use("/auth", authRouter);
 app.use("/member", memberRouter);
 app.use("/sanction", sanctionRouter);
+app.use("/report", reportRouter);
 
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
