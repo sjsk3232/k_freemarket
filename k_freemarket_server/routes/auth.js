@@ -87,6 +87,7 @@ router.post("/login", (req, res, next) => {
           result: true,
           message: "로그인에 성공하였습니다.",
           token: token,
+          author: user.author,
         });
       });
     }
