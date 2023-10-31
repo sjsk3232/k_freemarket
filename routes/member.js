@@ -101,7 +101,8 @@ router.delete("/drop", verifyToken, async (req, res, next) => {
         message: "회원이 존재하지 않습니다.",
       });
       return;
-    } else if (exUser.author === 1) {
+    }
+    if (exUser.author === 1) {
       res.json({
         result: false,
         message: "관리자 계정은 탈퇴할 수 없습니다.",
@@ -214,8 +215,7 @@ router.get("/search", async (req, res, next) => {
       });
     }
 
-    const totalCount = await user.findAll({
-      attributes: [[fn("COUNT", col("id")), "count"]],
+    const totalCount = await user.count({
       where: whereCondition,
     });
 
@@ -224,7 +224,7 @@ router.get("/search", async (req, res, next) => {
       result: true,
       message: "회원 검색이 완료되었습니다.",
       found: foundUsers,
-      totalCount: totalCount[0].dataValues.count,
+      totalCount: totalCount,
     });
   } catch (error) {
     console.error(error);

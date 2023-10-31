@@ -34,6 +34,7 @@ module.exports = function (sequelize, DataTypes) {
       sequelize,
       tableName: "review",
       timestamps: true,
+      updatedAt: false,
       indexes: [
         {
           name: "PRIMARY",

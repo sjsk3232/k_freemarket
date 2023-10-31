@@ -25,7 +25,7 @@ module.exports = function (sequelize, DataTypes) {
           key: "id",
         },
       },
-      description: {
+      content: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
@@ -38,6 +38,7 @@ module.exports = function (sequelize, DataTypes) {
       sequelize,
       tableName: "report_reply",
       timestamps: true,
+      updatedAt: false,
       indexes: [
         {
           name: "PRIMARY",

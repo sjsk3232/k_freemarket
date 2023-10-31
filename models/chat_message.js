@@ -38,6 +38,7 @@ module.exports = function (sequelize, DataTypes) {
       sequelize,
       tableName: "chat_message",
       timestamps: true,
+      updatedAt: false,
       indexes: [
         {
           name: "PRIMARY",

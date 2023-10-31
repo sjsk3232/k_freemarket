@@ -9,6 +9,8 @@ dotenv.config();
 const authRouter = require("./routes/auth");
 const memberRouter = require("./routes/member");
 const sanctionRouter = require("./routes/sanction");
+const reportRouter = require("./routes/report");
+const productRouter = require("./routes/product");
 const { sequelize } = require("./models");
 const passportConfig = require("./passport");
 
@@ -46,6 +48,8 @@ app.use(passport.session());
 app.use("/auth", authRouter);
 app.use("/member", memberRouter);
 app.use("/sanction", sanctionRouter);
+app.use("/report", reportRouter);
+app.use("/product", productRouter);
 
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
@@ -55,7 +59,7 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
   res.locals.message = err.message;
-  res.status(err.status || 500).send("undefined error");
+  res.status(err.status || 500).send(err.message);
 });
 
 app.listen(app.get("port"), () => {

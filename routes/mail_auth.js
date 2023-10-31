@@ -11,8 +11,9 @@ const genRandomNum = (min, max) => {
 
 const emailAuth = async (req, res) => {
   const number = genRandomNum(1000000, 9999999);
+  const { emailId } = req.query;
 
-  const email = req.body.emailId + "@kumoh.ac.kr"; //수신자 이메일 주소
+  const email = emailId + "@kumoh.ac.kr"; //수신자 이메일 주소
 
   const mailOptions = {
     from: env.MAIL_USER, //발신자 이메일 주소

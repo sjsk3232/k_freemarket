@@ -91,7 +91,6 @@ exports.verifySanctionedToken = async (req, res, next) => {
       },
     });
 
-    console.log("----- exSanction: ", exSanction);
     if (exSanction) {
       const sanctionedErr = new Error("제재 대상입니다.");
       sanctionedErr.name = "SanctionedTokenError";

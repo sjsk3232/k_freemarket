@@ -30,6 +30,7 @@ module.exports = function (sequelize, DataTypes) {
       sequelize,
       tableName: "product_Image",
       timestamps: true,
+      updatedAt: false,
       indexes: [
         {
           name: "PRIMARY",
