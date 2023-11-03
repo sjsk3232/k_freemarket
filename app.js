@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
@@ -17,6 +18,14 @@ const passportConfig = require("./passport");
 const app = express();
 passportConfig();
 app.set("port", process.env.PORT || 8000);
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
+
 sequelize
   .sync({ force: false })
   .then(() => {

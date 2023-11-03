@@ -12,11 +12,13 @@ const router = express.Router();
 router.post("/register", verifyToken, async (req, res, next) => {
   const { title, content } = req.body;
 
-  if (isEmptyOrSpaces(title) || isEmptyOrSpaces(content))
+  if (isEmptyOrSpaces(title) || isEmptyOrSpaces(content)) {
     return res.json({
       result: false,
       message: "등록하시려는 신고/문의글의 제목이나 본문이 없습니다.",
+      receivedData: { title, content },
     });
+  }
   try {
     let newReport;
     newReport = await report.create({
