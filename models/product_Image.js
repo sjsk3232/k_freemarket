@@ -17,8 +17,12 @@ module.exports = function (sequelize, DataTypes) {
           key: "id",
         },
       },
-      image_url: {
+      key: {
         type: DataTypes.STRING(100),
+        allowNull: false,
+      },
+      image_url: {
+        type: DataTypes.STRING(200),
         allowNull: false,
       },
       image_type: {

@@ -14,7 +14,6 @@ const passportConfig = require("./passport");
 const { sequelize } = require("./models");
 const dotenv = require("dotenv");
 dotenv.config();
-const multipart = require("connect-multiparty");
 
 const app = express();
 passportConfig();
@@ -40,6 +39,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
+
 app.use(
   session({
     resave: false,
