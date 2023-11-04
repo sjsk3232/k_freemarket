@@ -5,15 +5,16 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const morgan = require("morgan");
 const session = require("express-session");
-const dotenv = require("dotenv");
-dotenv.config();
 const authRouter = require("./routes/auth");
 const memberRouter = require("./routes/member");
 const sanctionRouter = require("./routes/sanction");
 const reportRouter = require("./routes/report");
 const productRouter = require("./routes/product");
-const { sequelize } = require("./models");
 const passportConfig = require("./passport");
+const { sequelize } = require("./models");
+const dotenv = require("dotenv");
+dotenv.config();
+const multipart = require("connect-multiparty");
 
 const app = express();
 passportConfig();
@@ -34,11 +35,10 @@ sequelize
   .catch((err) => {
     console.error(err);
   });
-
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(
   session({

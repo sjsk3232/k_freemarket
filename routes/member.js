@@ -153,6 +153,34 @@ router.patch("/change", verifyToken, async (req, res, next) => {
 });
 /************************************ 회원정보 수정 END ************************************/
 
+/************************************ 비로그인 비밀번호 수정 ************************************/
+router.patch("/changePw", async (req, res, next) => {
+  const { id, password } = req.body;
+
+  try {
+    let hash;
+    if (!isEmptyOrSpaces(password)) hash = await bcrypt.hash(password, 12);
+
+    // 회원 비밀번호 업데이트
+    await user.update({ password: hash }, { where: { id } });
+
+    // 업데이트된 회원 정보 조회
+    const updatedUser = await user.findOne({
+      attributes: ["id", "author"],
+      where: { id },
+    });
+    res.json({
+      result: true,
+      message: "회원 비밀번호 수정이 완료되었습니다.",
+      updated: updatedUser,
+    });
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+});
+/************************************ 비로그인 비밀번호 수정 END ************************************/
+
 /************************************ 회원 조회 ************************************/
 
 /** 조회 조건 요약 */

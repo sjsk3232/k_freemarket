@@ -21,6 +21,11 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+      image_type: {
+        type: DataTypes.TINYINT,
+        allowNull: false,
+        defaultValue: 0,
+      },
       createdAt: {
         field: "created_at",
         type: Sequelize.DATE,

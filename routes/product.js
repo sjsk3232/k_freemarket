@@ -6,22 +6,34 @@ const { verifyToken, verifySanctionedToken } = require("./middlewares");
 const { Op, fn, col } = require("sequelize");
 const { db } = require("../models");
 const { user, user_sanction } = db;
+const s3 = require("../modules/s3");
 const upload = require("../modules/multer");
 
 const router = express.Router();
 
-router.post("/sell", async (req, res, next) => {
-  const uploadSingle = upload.single("image");
-  uploadSingle(req, res, (error) => {
-    if (error) {
-      console.error(error);
-      return res
-        .status(500)
-        .json({ result: false, message: "Error uploading file" });
-    }
-    console.log(req.file);
-    res.json({ result: true, message: "", file: req.file });
-  });
-});
+/************************************ 상품 등록 ************************************/
+const uploadImages = upload.fields([{ name: "thumbnail" }, { name: "img" }]);
+
+router.post(
+  "/sell",
+  verifySanctionedToken,
+  uploadImages,
+  async (req, res, next) => {
+    res.json({
+      result: true,
+      message: "상품이 등록되었습니다.",
+      imgs: req.files,
+    });
+  }
+);
+/************************************ 상품 등록 END ************************************/
+
+/************************************ 상품 삭제 ************************************/
+
+/************************************ 상품 삭제 END ************************************/
+
+/************************************ 상품 수정 ************************************/
+
+/************************************ 상품 수정 END ************************************/
 
 module.exports = router;
