@@ -254,7 +254,7 @@ router.patch(
       // 상품 정보 업데이트
       await product.update(
         { title, content, price, category, status },
-        { where: { id: productId }, returning: true, plain: true }
+        { where: { id: productId } }
       );
 
       const updatedProduct = await product.findOne({
@@ -413,6 +413,12 @@ router.get("/searchOne", async (req, res, next) => {
   }
 
   try {
+    await product.increment("view", {
+      where: {
+        id: productId,
+      },
+    });
+
     const foundProduct = await product.findOne({
       attributes: [
         ["id", "product_id"],
@@ -436,6 +442,7 @@ router.get("/searchOne", async (req, res, next) => {
         },
       ],
     });
+
     res.json({
       result: true,
       message: "상품 조회가 완료되었습니다.",
