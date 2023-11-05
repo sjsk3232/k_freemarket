@@ -1,13 +1,6 @@
 const smtpTransport = require("../config/email_config");
-const dotenv = require("dotenv");
-dotenv.config();
+const { genRandomNum } = require("../util");
 const env = process.env;
-
-const genRandomNum = (min, max) => {
-  const randNum = Math.floor(Math.random() * (max - min + 1)) + min;
-
-  return randNum;
-};
 
 const emailAuth = async (req, res) => {
   const number = genRandomNum(1000000, 9999999);

@@ -1,6 +1,7 @@
 const multer = require("multer");
 const multerS3 = require("multer-s3");
 const { s3 } = require("./s3");
+const { genRandomNum } = require("../util");
 
 const upload = multer({
   storage: multerS3({
@@ -12,7 +13,10 @@ const upload = multer({
       cb(null, { fieldName: file.fieldname });
     },
     key: function (req, file, cb) {
-      cb(null, `${Date.now()}_${file.originalname}`); // 파일 Key 설정
+      cb(
+        null,
+        `${genRandomNum(1000, 9999)}_${Date.now()}_${file.originalname}`
+      ); // 파일 Key 설정
     },
   }),
 });
