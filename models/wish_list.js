@@ -21,11 +21,16 @@ module.exports = function (sequelize, DataTypes) {
           key: "id",
         },
       },
+      createdAt: {
+        field: "created_at",
+        type: Sequelize.DATE,
+      },
     },
     {
       sequelize,
       tableName: "wish_list",
-      timestamps: false,
+      timestamps: true,
+      updatedAt: false,
       indexes: [
         {
           name: "PRIMARY",

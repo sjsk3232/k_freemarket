@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const _ = require("lodash");
 const { isEmptyOrSpaces } = require("../util");
 const { verifyToken, verifyAdminToken } = require("./middlewares");
-const { Op, fn, col } = require("sequelize");
+const { Op } = require("sequelize");
 const { db } = require("../models");
 const { user, user_sanction } = db;
 
@@ -30,9 +30,19 @@ router.post("/enroll", async (req, res, next) => {
 
     if (exUser) {
       res.json({ result: false, message: "중복된 아이디입니다." });
-      console.log("-----exUser: ", exUser);
       return;
     }
+
+    // 중복 이메일 검사
+    // const exEmail = await user.findOne({
+    //   where: {
+    //     email,
+    //   },
+    // });
+
+    // if(exEmail) {
+    //   return res.json({ result: false, message: "중복된 이메일입니다." });
+    // }
 
     const exSanction = await user_sanction.findOne({
       where: {
@@ -129,6 +139,19 @@ router.patch("/change", verifyToken, async (req, res, next) => {
   try {
     let hash;
     if (!isEmptyOrSpaces(password)) hash = await bcrypt.hash(password, 12);
+
+    // 중복 이메일 검사
+    // if (!isEmptyOrSpaces(email)) {
+    //   const exEmail = await user.findOne({
+    //     where: {
+    //       email,
+    //     },
+    //   });
+
+    //   if (exEmail) {
+    //     return res.json({ result: false, message: "중복된 이메일입니다." });
+    //   }
+    // }
 
     // 회원 정보 업데이트
     await user.update(

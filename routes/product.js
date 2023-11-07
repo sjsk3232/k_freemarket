@@ -1,12 +1,11 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
 const _ = require("lodash");
 const { isEmptyOrSpaces } = require("../util");
-const { verifyToken, verifySanctionedToken } = require("./middlewares");
-const { Op, fn, col } = require("sequelize");
+const { verifySanctionedToken } = require("./middlewares");
+const { Op } = require("sequelize");
 const { db } = require("../models");
-const { user, user_sanction, product, product_Image } = db;
-const { s3, removeObjects } = require("../modules/s3");
+const { product, product_Image } = db;
+const { removeObjects } = require("../modules/s3");
 const upload = require("../modules/multer");
 
 const router = express.Router();
