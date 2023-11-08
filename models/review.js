@@ -17,6 +17,22 @@ module.exports = function (sequelize, DataTypes) {
           key: "id",
         },
       },
+      writer_id: {
+        type: DataTypes.STRING(15),
+        allowNull: true,
+        references: {
+          model: "user",
+          key: "id",
+        },
+      },
+      shop_id: {
+        type: DataTypes.STRING(15),
+        allowNull: true,
+        references: {
+          model: "user",
+          key: "id",
+        },
+      },
       rating: {
         type: DataTypes.DECIMAL(2, 1),
         allowNull: false,

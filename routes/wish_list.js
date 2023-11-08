@@ -129,7 +129,7 @@ router.get("/search", verifyToken, async (req, res, next) => {
   const { limit, pageNum } = req.query;
 
   const pageCondition = {};
-  const orderCondition = [["created_at", "ASC"]]; // 찜 목록에 추가한 시간을 기준으로 오름차순 정렬
+  const orderCondition = [["created_at", "DESC"]]; // 찜 목록에 추가한 시간을 기준으로 오름차순 정렬
 
   sumUpPageCondition(pageCondition, limit, pageNum);
 

@@ -104,6 +104,10 @@ function initModels(sequelize) {
   user.hasMany(report, { as: "reports", foreignKey: "reporter_id" });
   report_reply.belongsTo(user, { as: "reply", foreignKey: "reply_id" });
   user.hasMany(report_reply, { as: "report_replies", foreignKey: "reply_id" });
+  review.belongsTo(user, { as: "writer", foreignKey: "writer_id" });
+  user.hasMany(review, { as: "write_reviews", foreignKey: "writer_id" });
+  review.belongsTo(user, { as: "shop", foreignKey: "shop_id" });
+  user.hasMany(review, { as: "shop_reviews", foreignKey: "shop_id" });
   transaction.belongsTo(user, { as: "seller", foreignKey: "seller_id" });
   user.hasMany(transaction, { as: "transactions", foreignKey: "seller_id" });
   transaction.belongsTo(user, { as: "buyer", foreignKey: "buyer_id" });

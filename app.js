@@ -13,6 +13,8 @@ const sanctionRouter = require("./routes/sanction");
 const reportRouter = require("./routes/report");
 const productRouter = require("./routes/product");
 const wishListRouter = require("./routes/wish_list");
+const transactionRouter = require("./routes/transaction");
+const reviewRouter = require("./routes/review");
 const passportConfig = require("./passport");
 const { sequelize } = require("./models");
 
@@ -60,7 +62,9 @@ app.use("/member", memberRouter);
 app.use("/sanction", sanctionRouter);
 app.use("/report", reportRouter);
 app.use("/product", productRouter);
+app.use("/transaction", transactionRouter);
 app.use("/wishList", wishListRouter);
+app.use("/review", reviewRouter);
 
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);

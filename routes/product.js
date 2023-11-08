@@ -40,7 +40,6 @@ const uploadImages = upload.fields([
 ]);
 
 /************************************ 상품 등록 ************************************/
-
 router.post(
   "/sell",
   verifySanctionedToken,
@@ -287,24 +286,18 @@ router.patch(
 /************************************ 상품 목록 조회 ************************************/
 
 /** 조회 조건 요약 */
-function sumUpCondition(
-  whereCondition,
-  productId,
-  sellerId,
-  titleKeyword,
-  category
-) {
+function sumUpCondition(whereCondition, productId, sellerId, category, state) {
   if (!isEmptyOrSpaces(productId)) {
     whereCondition.id = productId;
   }
   if (!isEmptyOrSpaces(sellerId)) {
     whereCondition.seller_id = sellerId;
   }
-  if (!isEmptyOrSpaces(titleKeyword)) {
-    whereCondition.title = { [Op.substring]: titleKeyword };
-  }
   if (!isEmptyOrSpaces(category)) {
     whereCondition.category = category;
+  }
+  if (!isEmptyOrSpaces(state)) {
+    whereCondition.status = parseInt(state);
   }
 }
 
@@ -321,20 +314,61 @@ function sumUpPageCondition(pageCondition, limit, pageNum) {
   }
 }
 
+/** 정렬 순서 조건 요약 */
+function sumUpOrderCondition(orderCondition, order) {
+  switch (order) {
+    case "ASCPRICE": // 가격 낮은 순
+      orderCondition.push(["price", "ASC"]);
+      break;
+    case "DESCPRICE": // 가격 높은 순
+      orderCondition.push(["price", "DESC"]);
+      break;
+    case "LATEST": // 최신 업데이트 순
+      orderCondition.push(["updated_at", "DESC"]);
+      break;
+    case "VIEW": // 조회수 높은 순
+      orderCondition.push(["view", "DESC"]);
+      break;
+    case "LIKE": // 찜 많은 순
+      orderCondition.push(["like", "DESC"]);
+      break;
+    default:
+      break;
+  }
+}
+
 /** 각 조건은 AND 연산 */
 router.get("/searchList", async (req, res, next) => {
-  const { productId, sellerId, titleKeyword, category, limit, pageNum } =
-    req.query;
+  const {
+    productId,
+    sellerId,
+    keyword,
+    category,
+    state,
+    order,
+    limit,
+    pageNum,
+  } = req.query;
 
-  const whereCondition = {};
+  console.log("keyword: ", keyword);
+  console.log("order: ", order);
+  let whereCondition = {};
   const pageCondition = {};
-  const orderCondition = [["updated_at", "ASC"]]; // 상품 정보 수정 시간을 기준으로 오름차순 정렬
+  const orderCondition = [];
 
-  sumUpCondition(whereCondition, productId, sellerId, titleKeyword, category);
+  sumUpCondition(whereCondition, productId, sellerId, category, state);
+  if (!isEmptyOrSpaces(keyword)) {
+    whereCondition = {
+      ...whereCondition,
+      [Op.or]: [
+        { title: { [Op.substring]: keyword } },
+        { content: { [Op.substring]: keyword } },
+      ],
+    };
+  }
   sumUpPageCondition(pageCondition, limit, pageNum);
+  sumUpOrderCondition(orderCondition, order);
 
-  console.log("titleKey: ", titleKeyword);
-  console.log("where: ", whereCondition);
   try {
     let foundProducts;
     if (_.isEmpty(pageCondition)) {
@@ -345,7 +379,10 @@ router.get("/searchList", async (req, res, next) => {
           "title",
           "price",
           "category",
+          "view",
+          "like",
           "status",
+          "updated_at",
         ],
         where: whereCondition,
         order: orderCondition,
@@ -366,7 +403,10 @@ router.get("/searchList", async (req, res, next) => {
           "title",
           "price",
           "category",
+          "view",
+          "like",
           "status",
+          "updated_at",
         ],
         where: whereCondition,
         order: orderCondition,

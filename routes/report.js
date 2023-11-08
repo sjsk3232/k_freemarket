@@ -179,7 +179,7 @@ router.get("/searchForAdmin", verifyAdminToken, async (req, res, next) => {
 
   const whereCondition = {};
   const pageCondition = {};
-  const orderCondition = [["created_at", "ASC"]]; // 신고/문의 작성시간을 기준으로 오름차순 정렬
+  const orderCondition = [["created_at", "DESC"]]; // 신고/문의 작성시간을 기준으로 오름차순 정렬
 
   sumUpAdminCondition(whereCondition, reporter_id, titleKeyword);
   sumUpPageCondition(pageCondition, limit, pageNum);
@@ -249,7 +249,7 @@ router.get("/searchForMember", verifyToken, async (req, res, next) => {
 
   const whereCondition = {};
   const pageCondition = {};
-  const orderCondition = [["created_at", "ASC"]]; // 신고/문의 작성시간을 기준으로 오름차순 정렬
+  const orderCondition = [["created_at", "DESC"]]; // 신고/문의 작성시간을 기준으로 오름차순 정렬
 
   sumUpCondition(whereCondition, titleKeyword);
   sumUpPageCondition(pageCondition, limit, pageNum);

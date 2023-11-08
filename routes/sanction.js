@@ -116,7 +116,7 @@ router.get("/searchForAdmin", verifyAdminToken, async (req, res, next) => {
 
   const whereCondition = {};
   const pageCondition = {};
-  const orderCondition = [["created_at", "ASC"]]; // 제재 적용 일자를 기준으로 오름차순 정렬
+  const orderCondition = [["created_at", "DESC"]]; // 제재 적용 일자를 기준으로 오름차순 정렬
 
   sumUpCondition(whereCondition, author_id, target_id, target_email);
   sumUpPageCondition(pageCondition, limit, pageNum);
@@ -161,7 +161,7 @@ router.get("/searchForMember", verifyToken, async (req, res, next) => {
 
   const whereCondition = {};
   const pageCondition = {};
-  const orderCondition = [["created_at", "ASC"]]; // 제재 적용 일자를 기준으로 오름차순 정렬
+  const orderCondition = [["created_at", "DESC"]]; // 제재 적용 일자를 기준으로 오름차순 정렬
 
   sumUpCondition(whereCondition, author_id, req.decoded.id, target_email);
   sumUpPageCondition(pageCondition, limit, pageNum);
