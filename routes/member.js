@@ -252,13 +252,13 @@ router.get("/search", async (req, res, next) => {
     let foundUsers;
     if (_.isEmpty(pageCondition)) {
       foundUsers = await user.findAll({
-        attributes: ["id", "email", "name", "mobile"],
+        attributes: ["id", "email", "name", "mobile", "rating"],
         where: whereCondition,
         order: orderCondition,
       });
     } else {
       foundUsers = await user.findAll({
-        attributes: ["id", "email", "name", "mobile"],
+        attributes: ["id", "email", "name", "mobile", "rating"],
         where: whereCondition,
         limit: parseInt(pageCondition.limit),
         offset: parseInt(pageCondition.offset),

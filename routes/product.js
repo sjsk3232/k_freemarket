@@ -4,7 +4,7 @@ const { isEmptyOrSpaces } = require("../util");
 const { verifySanctionedToken } = require("./middlewares");
 const { Op } = require("sequelize");
 const { db } = require("../models");
-const { product, product_Image } = db;
+const { product, product_Image, user } = db;
 const { removeObjects } = require("../modules/s3");
 const upload = require("../modules/multer");
 
@@ -480,6 +480,12 @@ router.get("/searchOne", async (req, res, next) => {
           model: product_Image,
           as: "product_Images",
           attributes: ["key", "image_url", "image_type"],
+          required: true,
+        },
+        {
+          model: user,
+          as: "seller",
+          attributes: ["rating"],
           required: true,
         },
       ],

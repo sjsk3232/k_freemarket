@@ -3,7 +3,8 @@ const _ = require("lodash");
 const { isEmptyOrSpaces } = require("../util");
 const { verifyToken, verifySanctionedToken } = require("./middlewares");
 const { db } = require("../models");
-const { review, transaction, product } = db;
+const { review, transaction, product, user } = db;
+const { fn, col } = require("sequelize");
 
 const router = express.Router();
 
@@ -68,6 +69,30 @@ router.post("/write", verifySanctionedToken, async (req, res, next) => {
       rating: parseFloat(rating),
       content,
     });
+
+    const countRatings = await review.findOne({
+      attributes: [
+        "shop_id",
+        [fn("SUM", col("rating")), "sum_ratings"],
+        [fn("COUNT", col("id")), "count"],
+      ],
+      group: ["shop_id"],
+      where: { shop_id: exTransaction.seller_id },
+    });
+
+    const calcRating = (
+      parseFloat(countRatings.dataValues.sum_ratings) /
+      countRatings.dataValues.count
+    ).toFixed(1);
+
+    await user.update(
+      { rating: calcRating },
+      {
+        where: {
+          id: exTransaction.seller_id,
+        },
+      }
+    );
 
     res.json({
       result: true,
@@ -207,7 +232,6 @@ router.get("/searchWriteReview", async (req, res, next) => {
       where: whereCondition,
     });
 
-    console.log("found: ", foundReviews);
     res.json({
       result: true,
       message: "작성한 리뷰 조회가 완료되었습니다.",
@@ -301,7 +325,6 @@ router.get("/searchWrittenReview", async (req, res, next) => {
       where: whereCondition,
     });
 
-    console.log("found: ", foundReviews);
     res.json({
       result: true,
       message: "작성된 리뷰 조회가 완료되었습니다.",

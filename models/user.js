@@ -29,6 +29,11 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.STRING(11),
         allowNull: false,
       },
+      rating: {
+        type: DataTypes.DECIMAL(2, 1),
+        allowNull: false,
+        defaultValue: 0,
+      },
       createdAt: {
         field: "created_at",
         type: Sequelize.DATE,

@@ -27,7 +27,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       buyer_id: {
         type: DataTypes.STRING(15),
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "user",
           key: "id",
