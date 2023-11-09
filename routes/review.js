@@ -32,7 +32,7 @@ router.post("/write", verifySanctionedToken, async (req, res, next) => {
   }
   try {
     const exTransaction = await transaction.findOne({
-      attributes: ["buyer_id"],
+      attributes: ["buyer_id", "seller_id"],
       where: { id: transaction_id },
     });
 
@@ -130,10 +130,10 @@ function sumUpPageCondition(pageCondition, limit, pageNum) {
 }
 
 /** 각 조건은 AND 연산 */
-router.get("/searchWriteReview", verifyToken, async (req, res, next) => {
-  const { limit, pageNum } = req.query;
+router.get("/searchWriteReview", async (req, res, next) => {
+  const { user_id, limit, pageNum } = req.query;
 
-  const whereCondition = { writer_id: req.decoded.id };
+  const whereCondition = { writer_id: user_id };
   const pageCondition = {};
   const orderCondition = [["created_at", "DESC"]]; // 신고/문의 작성시간을 기준으로 오름차순 정렬
 
@@ -224,10 +224,10 @@ router.get("/searchWriteReview", verifyToken, async (req, res, next) => {
 /************************************ 작성된 리뷰 조회 ************************************/
 
 /** 각 조건은 AND 연산 */
-router.get("/searchWriteReview", verifyToken, async (req, res, next) => {
-  const { limit, pageNum } = req.query;
+router.get("/searchWrittenReview", async (req, res, next) => {
+  const { user_id, limit, pageNum } = req.query;
 
-  const whereCondition = { shop_id: req.decoded.id };
+  const whereCondition = { shop_id: user_id };
   const pageCondition = {};
   const orderCondition = [["created_at", "DESC"]]; // 신고/문의 작성시간을 기준으로 오름차순 정렬
 
@@ -304,7 +304,7 @@ router.get("/searchWriteReview", verifyToken, async (req, res, next) => {
     console.log("found: ", foundReviews);
     res.json({
       result: true,
-      message: "작성한 리뷰 조회가 완료되었습니다.",
+      message: "작성된 리뷰 조회가 완료되었습니다.",
       found: foundReviews,
       totalCount: totalCount,
     });

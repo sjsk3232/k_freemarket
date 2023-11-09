@@ -332,7 +332,8 @@ function sumUpOrderCondition(orderCondition, order) {
     case "LIKE": // 찜 많은 순
       orderCondition.push(["like", "DESC"]);
       break;
-    default:
+    default: // 기본 설정 (최신 업데이트 순)
+      orderCondition.push(["updated_at", "DESC"]);
       break;
   }
 }
@@ -391,6 +392,7 @@ router.get("/searchList", async (req, res, next) => {
             model: product_Image,
             as: "product_Images",
             attributes: ["key", "image_url", "image_type"],
+            where: { image_type: 1 },
             required: true,
           },
         ],
@@ -417,6 +419,7 @@ router.get("/searchList", async (req, res, next) => {
             model: product_Image,
             as: "product_Images",
             attributes: ["key", "image_url", "image_type"],
+            where: { image_type: 1 },
             required: true,
           },
         ],
