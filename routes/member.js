@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const _ = require("lodash");
 const { isEmptyOrSpaces } = require("../util");
 const { verifyToken, verifyAdminToken } = require("./middlewares");
-const { Op } = require("sequelize");
+const { Op, fn, col } = require("sequelize");
 const { db } = require("../models");
 const { user, user_sanction } = db;
 
@@ -237,7 +237,7 @@ function sumUpPageCondition(pageCondition, limit, pageNum) {
 
 /** 각 조건은 AND 연산 */
 router.get("/search", async (req, res, next) => {
-  const { id, email, name, mobile, limit, pageNum } = req.query;
+  const { id, email, name, mobile, getSanction, limit, pageNum } = req.query;
 
   const whereCondition = {};
   const pageCondition = {};
@@ -249,28 +249,53 @@ router.get("/search", async (req, res, next) => {
   whereCondition.author = { [Op.ne]: 1 }; // 관리자 계정은 제외
 
   try {
-    let foundUsers;
-    if (_.isEmpty(pageCondition)) {
-      foundUsers = await user.findAll({
-        attributes: ["id", "email", "name", "mobile", "rating"],
-        where: whereCondition,
-        order: orderCondition,
-      });
-    } else {
-      foundUsers = await user.findAll({
-        attributes: ["id", "email", "name", "mobile", "rating"],
-        where: whereCondition,
-        limit: parseInt(pageCondition.limit),
-        offset: parseInt(pageCondition.offset),
-        order: orderCondition,
-      });
+    const findCondition = {
+      attributes: ["id", "email", "name", "mobile", "rating"],
+      where: whereCondition,
+      order: orderCondition,
+    };
+
+    if (!_.isEmpty(pageCondition)) {
+      findCondition.limit = parseInt(pageCondition.limit);
+      findCondition.offset = parseInt(pageCondition.offset);
     }
+
+    if (getSanction === "true" && !isEmptyOrSpaces(id)) {
+      findCondition.include = [
+        {
+          model: user_sanction,
+          as: "target_user_sanctions",
+          attributes: ["target_id", [fn("MAX", col("expire_at")), "expire"]],
+          where: { target_id: id, expire_at: { [Op.gt]: new Date() } },
+          required: false,
+        },
+      ];
+    }
+
+    console.log("findCondition: ", findCondition);
+    const foundUsers = await user.findAll(findCondition);
+
+    // let foundUsers;
+    // if (_.isEmpty(pageCondition)) {
+    //   foundUsers = await user.findAll({
+    //     attributes: ["id", "email", "name", "mobile", "rating"],
+    //     where: whereCondition,
+    //     order: orderCondition,
+    //   });
+    // } else {
+    //   foundUsers = await user.findAll({
+    //     attributes: ["id", "email", "name", "mobile", "rating"],
+    //     where: whereCondition,
+    //     order: orderCondition,
+    //     limit: parseInt(pageCondition.limit),
+    //     offset: parseInt(pageCondition.offset),
+    //   });
+    // }
 
     const totalCount = await user.count({
       where: whereCondition,
     });
 
-    console.log("found: ", foundUsers);
     res.json({
       result: true,
       message: "회원 검색이 완료되었습니다.",

@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
 const { db } = require("../models");
 const { user, user_sanction } = db;
+const env = process.env;
 
 exports.isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
@@ -53,7 +54,7 @@ function errorHandling(res, error) {
 /** 제재 여부 확인 안하는 토큰 검증 */
 exports.verifyToken = async (req, res, next) => {
   try {
-    req.decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
+    req.decoded = jwt.verify(req.headers.authorization, env.JWT_SECRET);
 
     // DB에서 가입된 회원 검색
     const exUser = await user.findByPk(req.decoded.id);
@@ -73,7 +74,7 @@ exports.verifyToken = async (req, res, next) => {
 /** 제재 여부 확인하는 토큰 검증 */
 exports.verifySanctionedToken = async (req, res, next) => {
   try {
-    req.decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
+    req.decoded = jwt.verify(req.headers.authorization, env.JWT_SECRET);
 
     // DB에서 가입된 회원 검색
     const exUser = await user.findByPk(req.decoded.id);
@@ -106,7 +107,7 @@ exports.verifySanctionedToken = async (req, res, next) => {
 /** 관리자 토큰 검증 */
 exports.verifyAdminToken = async (req, res, next) => {
   try {
-    req.decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
+    req.decoded = jwt.verify(req.headers.authorization, env.JWT_SECRET);
 
     // DB에서 가입된 회원 검색
     const exUser = await user.findByPk(req.decoded.id);
@@ -123,5 +124,46 @@ exports.verifyAdminToken = async (req, res, next) => {
     return next();
   } catch (error) {
     return errorHandling(res, error);
+  }
+};
+
+/** 소켓에서 제재 여부 확인하는 토큰 검증 */
+exports.verifySocketSanctionedToken = async (socket, next) => {
+  try {
+    if (!(socket.handshake.query && socket.handshake.query.authorization)) {
+      const socketError = new Error("증명되지 않은 소켓입니다.");
+      socketError.name = "socketError";
+      throw socketError;
+    }
+
+    const token = socket.handshake.query.authorization;
+    console.log("token: ", token);
+
+    socket.decoded = jwt.verify(token, env.JWT_SECRET);
+
+    // DB에서 가입된 회원 검색
+    const exUser = await user.findByPk(socket.decoded.id);
+
+    if (!exUser) {
+      const nonExistErr = new Error("존재하지 않는 아이디입니다.");
+      nonExistErr.name = "NotExistIdTokenError";
+      throw nonExistErr;
+    }
+
+    const exSanction = await user_sanction.findOne({
+      where: {
+        target_id: exUser.id,
+        expire_at: { [Op.gt]: new Date() },
+      },
+    });
+
+    if (exSanction) {
+      const sanctionedErr = new Error("제재 대상입니다.");
+      sanctionedErr.name = "SanctionedTokenError";
+      throw sanctionedErr;
+    }
+    next();
+  } catch (error) {
+    return next(error);
   }
 };

@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const morgan = require("morgan");
 const session = require("express-session");
+const chatWebSocket = require("./routes/chat");
 const authRouter = require("./routes/auth");
 const memberRouter = require("./routes/member");
 const sanctionRouter = require("./routes/sanction");
@@ -77,6 +78,8 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).send(err.message);
 });
 
-app.listen(app.get("port"), () => {
+const server = app.listen(app.get("port"), () => {
   console.log(app.get("port"), "번 포트에서 대기중");
 });
+
+chatWebSocket(server, app);
