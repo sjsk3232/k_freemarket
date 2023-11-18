@@ -14,6 +14,7 @@ module.exports = () => {
       async (id, password, done) => {
         try {
           const exUser = await user.findByPk(id);
+          console.log("id,pw: ", id, exUser.password);
           if (exUser) {
             //비밀번호 검증
             const result = await bcrypt.compare(password, exUser.password);

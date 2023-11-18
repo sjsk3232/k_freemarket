@@ -50,6 +50,10 @@ function initModels(sequelize) {
     foreignKey: "user_id",
     otherKey: "product_id",
   });
+  chat_room.belongsTo(product, {
+    as: "product",
+    foreignKey: "product_id",
+  });
   chat_message.belongsTo(chat_attend, {
     as: "chat_room",
     foreignKey: "chat_room_id",

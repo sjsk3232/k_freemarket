@@ -9,9 +9,13 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         primaryKey: true,
       },
-      name: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
+      product_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: "product",
+          key: "id",
+        },
       },
       seller_check: {
         type: DataTypes.BOOLEAN,

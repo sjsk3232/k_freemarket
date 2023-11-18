@@ -127,6 +127,33 @@ exports.verifyAdminToken = async (req, res, next) => {
   }
 };
 
+/** 소켓에서 토큰 검증 */
+exports.verifySocketToken = async (socket, next) => {
+  try {
+    if (!(socket.handshake.headers && socket.handshake.headers.authorization)) {
+      const socketError = new Error("증명되지 않은 소켓입니다.");
+      socketError.name = "socketError";
+      throw socketError;
+    }
+
+    const token = socket.handshake.headers.authorization;
+    socket.decoded = jwt.verify(token, env.JWT_SECRET);
+
+    // DB에서 가입된 회원 검색
+    const exUser = await user.findByPk(socket.decoded.id);
+
+    if (!exUser) {
+      const nonExistErr = new Error("존재하지 않는 아이디입니다.");
+      nonExistErr.name = "NotExistIdTokenError";
+      throw nonExistErr;
+    }
+
+    next();
+  } catch (error) {
+    return next(error);
+  }
+};
+
 /** 소켓에서 제재 여부 확인하는 토큰 검증 */
 exports.verifySocketSanctionedToken = async (socket, next) => {
   try {
@@ -137,8 +164,6 @@ exports.verifySocketSanctionedToken = async (socket, next) => {
     }
 
     const token = socket.handshake.query.authorization;
-    console.log("token: ", token);
-
     socket.decoded = jwt.verify(token, env.JWT_SECRET);
 
     // DB에서 가입된 회원 검색

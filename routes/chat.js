@@ -1,20 +1,28 @@
 const SocketIO = require("socket.io");
-const verifySocketSanctionedToken = require("./middlewares");
+const express = require("express");
+const {
+  verifySocketToken,
+  verifySocketSanctionedToken,
+} = require("./middlewares");
+const { isEmptyOrSpaces } = require("../util");
+const { db } = require("../models");
+const { chat_attend, chat_room, chat_message } = db;
 
+// WebSocket Code
 const chatWebSocket = (server, app) => {
   const io = SocketIO(server, { path: "/socket.io" });
   app.set("io", io);
-  const room = io.of("/room");
-  const chat = io.of("/chat");
 
-  io.use;
+  const room = io.of("/room").use((socket, next) => {
+    verifySocketToken(socket, next);
+    next();
+  });
+  const chat = io.of("/chat").use((socket, next) => {
+    verifySocketToken(socket, next);
+    next();
+  });
 
   room.on("connection", (socket) => {
-    console.log("room 네임스페이스에 접속");
-    console.log("socket: ", socket.decoded);
-    // socket.emit("logined", {
-    //   user: socket.decoded.id,
-    // });
     socket.on("disconnect", () => {
       console.log("room 네임스페이스 접속 해제");
     });
@@ -57,5 +65,11 @@ const chatWebSocket = (server, app) => {
     });
   });
 };
+// WebSocket Code END
 
-module.exports = chatWebSocket;
+// Router Code
+const chatRouter = express.Router();
+
+// Router Code END
+
+module.exports = { chatWebSocket, chatRouter };
