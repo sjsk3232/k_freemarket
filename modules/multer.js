@@ -13,6 +13,9 @@ const upload = multer({
       cb(null, { fieldName: file.fieldname });
     },
     key: function (req, file, cb) {
+      file.originalname = Buffer.from(file.originalname, "latin1").toString(
+        "utf8"
+      );
       cb(
         null,
         `${genRandomNum(1000, 9999)}_${Date.now()}_${file.originalname}`
