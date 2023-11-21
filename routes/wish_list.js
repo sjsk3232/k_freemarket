@@ -3,6 +3,7 @@ const _ = require("lodash");
 const { isEmptyOrSpaces } = require("../util");
 const { verifyToken } = require("./middlewares");
 const { db } = require("../models");
+const { use } = require("passport");
 const { wish_list, product, product_Image } = db;
 
 const router = express.Router();
@@ -33,7 +34,7 @@ router.post("/add", verifyToken, async (req, res, next) => {
     }
 
     const exProduct = await product.findOne({
-      attributes: ["seller_id"],
+      attributes: ["id", "seller_id", "like"],
       where: { id: productId },
     });
 
@@ -57,6 +58,8 @@ router.post("/add", verifyToken, async (req, res, next) => {
       user_id: req.decoded.id,
       product_id: productId,
     });
+
+    await exProduct.increment("like");
 
     res.json({
       result: true,
@@ -96,6 +99,7 @@ router.delete("/delete", verifyToken, async (req, res, next) => {
     }
 
     await foundWishList.destroy();
+    await product.decrement(["like"], { where: { id: productId } });
 
     res.json({
       result: true,
