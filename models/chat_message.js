@@ -13,16 +13,16 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "chat_attend",
-          key: "chat_room_id",
+          model: "chat_room",
+          key: "id",
         },
       },
       sender_id: {
         type: DataTypes.STRING(15),
-        allowNull: false,
+        allowNull: true,
         references: {
-          model: "chat_attend",
-          key: "attend_id",
+          model: "user",
+          key: "id",
         },
       },
       content: {
@@ -47,12 +47,12 @@ module.exports = function (sequelize, DataTypes) {
           fields: [{ name: "id" }],
         },
         {
-          name: "chat_room_id",
+          name: "chat_message_ibfk_1_idx",
           using: "BTREE",
           fields: [{ name: "chat_room_id" }],
         },
         {
-          name: "sender_id",
+          name: "chat_message_ibfk_2_idx",
           using: "BTREE",
           fields: [{ name: "sender_id" }],
         },

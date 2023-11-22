@@ -34,7 +34,7 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
       },
       expire_at: {
-        type: Sequelize.DATE,
+        type: DataTypes.DATE,
         allowNull: false,
         defaultValue: "9999-12-31 00:00:00",
       },

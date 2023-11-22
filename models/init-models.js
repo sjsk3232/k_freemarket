@@ -26,49 +26,17 @@ function initModels(sequelize) {
   var user_sanction = _user_sanction(sequelize, DataTypes);
   var wish_list = _wish_list(sequelize, DataTypes);
 
-  chat_room.belongsToMany(user, {
-    as: "attend_id_users",
-    through: chat_attend,
-    foreignKey: "chat_room_id",
-    otherKey: "attend_id",
-  });
   product.belongsToMany(user, {
     as: "user_id_users",
     through: wish_list,
     foreignKey: "product_id",
     otherKey: "user_id",
   });
-  user.belongsToMany(chat_room, {
-    as: "chat_room_id_chat_rooms",
-    through: chat_attend,
-    foreignKey: "attend_id",
-    otherKey: "chat_room_id",
-  });
   user.belongsToMany(product, {
     as: "product_id_products",
     through: wish_list,
     foreignKey: "user_id",
     otherKey: "product_id",
-  });
-  chat_room.belongsTo(product, {
-    as: "product",
-    foreignKey: "product_id",
-  });
-  chat_message.belongsTo(chat_attend, {
-    as: "chat_room",
-    foreignKey: "chat_room_id",
-  });
-  chat_attend.hasMany(chat_message, {
-    as: "chat_messages",
-    foreignKey: "chat_room_id",
-  });
-  chat_message.belongsTo(chat_attend, {
-    as: "sender",
-    foreignKey: "sender_id",
-  });
-  chat_attend.hasMany(chat_message, {
-    as: "sender_chat_messages",
-    foreignKey: "sender_id",
   });
   chat_attend.belongsTo(chat_room, {
     as: "chat_room",
@@ -77,6 +45,19 @@ function initModels(sequelize) {
   chat_room.hasMany(chat_attend, {
     as: "chat_attends",
     foreignKey: "chat_room_id",
+  });
+  chat_message.belongsTo(chat_room, {
+    as: "chat_room",
+    foreignKey: "chat_room_id",
+  });
+  chat_room.hasMany(chat_message, {
+    as: "chat_messages",
+    foreignKey: "chat_room_id",
+  });
+  chat_attend.belongsTo(product, { as: "product", foreignKey: "product_id" });
+  product.hasMany(chat_attend, {
+    as: "chat_attends",
+    foreignKey: "product_id",
   });
   product_Image.belongsTo(product, { as: "product", foreignKey: "product_id" });
   product.hasMany(product_Image, {
@@ -100,8 +81,15 @@ function initModels(sequelize) {
     foreignKey: "transaction_id",
   });
   transaction.hasMany(review, { as: "reviews", foreignKey: "transaction_id" });
-  chat_attend.belongsTo(user, { as: "attend", foreignKey: "attend_id" });
-  user.hasMany(chat_attend, { as: "chat_attends", foreignKey: "attend_id" });
+  chat_attend.belongsTo(user, { as: "seller", foreignKey: "seller_id" });
+  user.hasMany(chat_attend, { as: "chat_attends", foreignKey: "seller_id" });
+  chat_attend.belongsTo(user, { as: "buyer", foreignKey: "buyer_id" });
+  user.hasMany(chat_attend, {
+    as: "buyer_chat_attends",
+    foreignKey: "buyer_id",
+  });
+  chat_message.belongsTo(user, { as: "sender", foreignKey: "sender_id" });
+  user.hasMany(chat_message, { as: "chat_messages", foreignKey: "sender_id" });
   product.belongsTo(user, { as: "seller", foreignKey: "seller_id" });
   user.hasMany(product, { as: "products", foreignKey: "seller_id" });
   report.belongsTo(user, { as: "reporter", foreignKey: "reporter_id" });
@@ -109,7 +97,7 @@ function initModels(sequelize) {
   report_reply.belongsTo(user, { as: "reply", foreignKey: "reply_id" });
   user.hasMany(report_reply, { as: "report_replies", foreignKey: "reply_id" });
   review.belongsTo(user, { as: "writer", foreignKey: "writer_id" });
-  user.hasMany(review, { as: "write_reviews", foreignKey: "writer_id" });
+  user.hasMany(review, { as: "reviews", foreignKey: "writer_id" });
   review.belongsTo(user, { as: "shop", foreignKey: "shop_id" });
   user.hasMany(review, { as: "shop_reviews", foreignKey: "shop_id" });
   transaction.belongsTo(user, { as: "seller", foreignKey: "seller_id" });

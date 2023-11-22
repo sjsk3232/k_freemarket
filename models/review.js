@@ -63,6 +63,16 @@ module.exports = function (sequelize, DataTypes) {
           using: "BTREE",
           fields: [{ name: "transaction_id" }],
         },
+        {
+          name: "review_ibfk_2_idx",
+          using: "BTREE",
+          fields: [{ name: "writer_id" }],
+        },
+        {
+          name: "review_ibfk_3_idx",
+          using: "BTREE",
+          fields: [{ name: "shop_id" }],
+        },
       ],
     }
   );

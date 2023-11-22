@@ -9,21 +9,13 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         primaryKey: true,
       },
-      product_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-          model: "product",
-          key: "id",
-        },
-      },
       seller_check: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.TINYINT,
         allowNull: false,
         defaultValue: 0,
       },
       buyer_check: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.TINYINT,
         allowNull: false,
         defaultValue: 0,
       },

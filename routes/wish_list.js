@@ -3,7 +3,6 @@ const _ = require("lodash");
 const { isEmptyOrSpaces } = require("../util");
 const { verifyToken } = require("./middlewares");
 const { db } = require("../models");
-const { use } = require("passport");
 const { wish_list, product, product_Image } = db;
 
 const router = express.Router();

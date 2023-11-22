@@ -32,7 +32,7 @@ module.exports = function (sequelize, DataTypes) {
       rating: {
         type: DataTypes.DECIMAL(2, 1),
         allowNull: false,
-        defaultValue: 0,
+        defaultValue: 0.0,
       },
       createdAt: {
         field: "created_at",
