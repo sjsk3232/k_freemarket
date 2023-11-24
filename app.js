@@ -7,7 +7,8 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const morgan = require("morgan");
 const session = require("express-session");
-const { chatWebSocket, chatRouter } = require("./routes/chat");
+const chatWebSocket = require("./modules/chat_socket");
+const chatRouter = require("./routes/chat");
 const authRouter = require("./routes/auth");
 const memberRouter = require("./routes/member");
 const sanctionRouter = require("./routes/sanction");
@@ -66,6 +67,7 @@ app.use("/product", productRouter);
 app.use("/transaction", transactionRouter);
 app.use("/wishList", wishListRouter);
 app.use("/review", reviewRouter);
+app.use("/chat", chatRouter);
 
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);

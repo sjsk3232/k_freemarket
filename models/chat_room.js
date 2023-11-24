@@ -33,12 +33,15 @@ module.exports = function (sequelize, DataTypes) {
         field: "created_at",
         type: Sequelize.DATE,
       },
+      updatedAt: {
+        field: "updated_at",
+        type: Sequelize.DATE,
+      },
     },
     {
       sequelize,
       tableName: "chat_room",
       timestamps: true,
-      updatedAt: false,
       indexes: [
         {
           name: "PRIMARY",
