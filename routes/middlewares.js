@@ -133,7 +133,7 @@ exports.verifySocketToken = async (socket, next) => {
     if (!(socket.handshake.headers && socket.handshake.headers.authorization)) {
       const socketError = new Error("증명되지 않은 소켓입니다.");
       socketError.name = "socketError";
-      throw socketError;
+      next(socketError);
     }
 
     const token = socket.handshake.headers.authorization;
@@ -145,7 +145,7 @@ exports.verifySocketToken = async (socket, next) => {
     if (!exUser) {
       const nonExistErr = new Error("존재하지 않는 아이디입니다.");
       nonExistErr.name = "NotExistIdTokenError";
-      throw nonExistErr;
+      next(nonExistErr);
     }
 
     next();
@@ -157,13 +157,13 @@ exports.verifySocketToken = async (socket, next) => {
 /** 소켓에서 제재 여부 확인하는 토큰 검증 */
 exports.verifySocketSanctionedToken = async (socket, next) => {
   try {
-    if (!(socket.handshake.query && socket.handshake.query.authorization)) {
+    if (!(socket.handshake.headers && socket.handshake.headers.authorization)) {
       const socketError = new Error("증명되지 않은 소켓입니다.");
       socketError.name = "socketError";
-      throw socketError;
+      next(socketError);
     }
 
-    const token = socket.handshake.query.authorization;
+    const token = socket.handshake.headers.authorization;
     socket.decoded = jwt.verify(token, env.JWT_SECRET);
 
     // DB에서 가입된 회원 검색
@@ -172,7 +172,7 @@ exports.verifySocketSanctionedToken = async (socket, next) => {
     if (!exUser) {
       const nonExistErr = new Error("존재하지 않는 아이디입니다.");
       nonExistErr.name = "NotExistIdTokenError";
-      throw nonExistErr;
+      next(nonExistErr);
     }
 
     const exSanction = await user_sanction.findOne({
@@ -185,8 +185,9 @@ exports.verifySocketSanctionedToken = async (socket, next) => {
     if (exSanction) {
       const sanctionedErr = new Error("제재 대상입니다.");
       sanctionedErr.name = "SanctionedTokenError";
-      throw sanctionedErr;
+      next(sanctionedErr);
     }
+
     next();
   } catch (error) {
     return next(error);

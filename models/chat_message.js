@@ -29,6 +29,11 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.STRING(300),
         allowNull: false,
       },
+      unread: {
+        type: DataTypes.TINYINT,
+        allowNull: false,
+        defaultValue: 1,
+      },
       createdAt: {
         field: "created_at",
         type: Sequelize.DATE,
