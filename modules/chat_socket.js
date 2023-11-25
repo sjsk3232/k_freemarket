@@ -46,7 +46,7 @@ const chatWebSocket = (server, app) => {
           required: false,
         },
         {
-          model: chatRoom,
+          model: chat_room,
           as: "chat_room",
           required: true,
         },
