@@ -1,4 +1,5 @@
 const SocketIO = require("socket.io");
+const cors = require("cors");
 const {
   verifySocketToken,
   verifySocketSanctionedToken,
@@ -11,6 +12,14 @@ const { chat_attend, chat_room, chat_message, product } = db;
 // WebSocket Code
 const chatWebSocket = (server, app) => {
   const io = SocketIO(server);
+  io.use(
+    cors({
+      origin: "*",
+      credentials: true,
+      optionsSuccessStatus: 200,
+    })
+  );
+
   app.set("io", io);
 
   const chatRoomList = io.of("/chatRoomList").use((socket, next) => {
