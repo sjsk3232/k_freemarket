@@ -97,18 +97,6 @@ router.post("/enterChatRoom", verifySanctionedToken, async (req, res, next) => {
       product_id: isEmptyProductId ? null : exProduct.id,
     });
 
-    // const newChatAttend = await chat_attend.findOne({
-    //   where: { chat_room_id: newChatRoom.id },
-    //   include: [
-    //     {
-    //       model: product,
-    //       as: "product",
-    //       attributes: ["title"],
-    //       required: false,
-    //     },
-    //   ],
-    // });
-
     // 채팅방 목록에 접속 중인 상대에게 새로운 채팅방 정보 emit
     const io = req.app.get("io");
     const sockets = await io.of("/chatRoomList").fetchSockets();

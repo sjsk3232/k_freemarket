@@ -108,11 +108,20 @@ const chatWebSocket = (server, app) => {
       console.error(new Error("참가하려는 채팅방에 참가할 권한이 없습니다."));
       return socket.disconnect(true);
     }
+    const isSeller = exChatAttend.seller_id === socket.decoded.id;
 
     // 채팅방 참가
     socket.join(chatRoomId);
 
-    // unread 카운트 수정
+    // chat_room unread 카운트 수정
+    if (isSeller) {
+      await chat_room.update(
+        { seller_unread: 0 },
+        { where: { id: exChatAttend.chat_room_id } }
+      );
+    }
+
+    // chat_message unread 카운트 수정
     await chat_message.decrement("unread", {
       where: {
         chat_room_id: chatRoomId,
@@ -152,14 +161,17 @@ const chatWebSocket = (server, app) => {
 
       // 채팅방의 대화 상대의 읽지 않음 카운트 증가
       let partnerId, count;
-      if (exChatAttend.seller_id !== socket.decoded.id) {
+      if (isSeller) {
+        partnerId = exChatAttend.buyer_id;
+        count = foundChatRoom.buyer_unread + 1;
+        await foundChatRoom.increment("buyer_unread");
         partnerId = exChatAttend.seller_id;
         count = foundChatRoom.seller_unread + 1;
         await foundChatRoom.increment("seller_unread");
       } else {
-        partnerId = exChatAttend.buyer_id;
-        count = foundChatRoom.buyer_unread + 1;
-        await foundChatRoom.increment("buyer_unread");
+        partnerId = exChatAttend.seller_id;
+        count = foundChatRoom.seller_unread + 1;
+        await foundChatRoom.increment("seller_unread");
       }
 
       // 대화 상대가 채팅방 목록에 접속 중일시, 읽지 않음 정보 emit
