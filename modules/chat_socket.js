@@ -21,12 +21,10 @@ const chatWebSocket = (server, app) => {
 
   const chatRoomList = io.of("/chatRoomList").use((socket, next) => {
     verifySocketToken(socket, next);
-    next();
   });
 
   const chatRoom = io.of("/chatRoom").use((socket, next) => {
     verifySocketSanctionedToken(socket, next);
-    next();
   });
 
   /************************************ 채팅방 목록 ************************************/
