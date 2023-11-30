@@ -57,51 +57,82 @@ router.post("/enterChatRoom", verifySanctionedToken, async (req, res, next) => {
       }
     }
 
+    const whereCondition = isEmptyProductId
+      ? {
+          product_id: null,
+          [Op.or]: [
+            {
+              [Op.and]: [
+                { seller_id: req.decoded.id },
+                { buyer_id: chatPartnerId },
+              ],
+            },
+            {
+              [Op.and]: [
+                { seller_id: chatPartnerId },
+                { buyer_id: req.decoded.id },
+              ],
+            },
+          ],
+        }
+      : {
+          product_id: productId,
+          seller_id: exProduct.seller_id,
+          buyer_id: req.decoded.id,
+        };
+
     // 채팅방 존재 여부 검사
-    const exChatAttend = isEmptyProductId
-      ? await chat_attend.findOne({
-          where: {
-            product_id: null,
-            [Op.or]: [
-              {
-                [Op.and]: [
-                  { seller_id: req.decoded.id },
-                  { buyer_id: chatPartnerId },
-                ],
-              },
-              {
-                [Op.and]: [
-                  { seller_id: chatPartnerId },
-                  { buyer_id: req.decoded.id },
-                ],
-              },
-            ],
-          },
-        })
-      : await chat_attend.findOne({
-          where: {
-            product_id: productId,
-            seller_id: exProduct.seller_id,
-            buyer_id: req.decoded.id,
-          },
-        });
+    const exChatAttend = await chat_attend.findOne({
+      where: whereCondition,
+      include: [
+        {
+          model: product,
+          as: "product",
+          attributes: ["title"],
+          required: false,
+        },
+        {
+          model: chat_room,
+          as: "chat_room",
+          required: true,
+        },
+      ],
+    });
 
     if (exChatAttend) {
       return res.json({
         result: true,
         message: "이미 존재하는 채팅방입니다.",
-        chatRoomId: exChatAttend.chat_room_id,
+        chatAttend: exChatAttend,
       });
     }
 
     // 채팅방 생성 후, 채팅방 참가 정보 저장
     const newChatRoom = await chat_room.create();
 
-    const newChatAttend = await chat_attend.create({
+    await chat_attend.create({
       chat_room_id: newChatRoom.id,
       seller_id: isEmptyProductId ? exPartner.id : exProduct.seller_id,
       buyer_id: req.decoded.id,
       product_id: isEmptyProductId ? null : exProduct.id,
+    });
+
+    // 생성된 채팅방 참가 정보 검색
+    const newChatAttend = await chat_attend.findOne({
+      where: { chat_room_id: newChatRoom.id },
+      include: [
+        {
+          model: product,
+          as: "product",
+          attributes: ["title"],
+          required: false,
+        },
+        {
+          model: chat_room,
+          as: "chat_room",
+          required: true,
+        },
+      ],
     });
 
     // 채팅방 목록에 접속 중인 상대에게 새로운 채팅방 정보 emit
@@ -118,7 +149,7 @@ router.post("/enterChatRoom", verifySanctionedToken, async (req, res, next) => {
     res.json({
       result: true,
       message: "채팅방이 생성되었습니다.",
-      chatRoomId: newChatAttend.chat_room_id,
+      chatAttend: newChatAttend,
     });
   } catch (error) {
     console.error(error);

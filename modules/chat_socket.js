@@ -1,4 +1,5 @@
 const SocketIO = require("socket.io");
+const { RateLimiterMemory } = require("rate-limiter-flexible");
 const {
   verifySocketToken,
   verifySocketSanctionedToken,
@@ -7,6 +8,11 @@ const { isEmptyOrSpaces } = require("../util");
 const { Op, col } = require("sequelize");
 const { db } = require("../models");
 const { chat_attend, chat_room, chat_message, product } = db;
+
+const rateLimiter = new RateLimiterMemory({
+  points: 10, // 5 points
+  duration: 60, // per second
+});
 
 // WebSocket Code
 const chatWebSocket = (server, app) => {
@@ -29,6 +35,12 @@ const chatWebSocket = (server, app) => {
 
   /************************************ 채팅방 목록 ************************************/
   chatRoomList.on("connection", async (socket) => {
+    // 1번 connection 시도에 1포인트 소비
+    rateLimiter.consume(socket).catch((rateLimiterRes) => {
+      console.error(new Error("너무 많은 connection 시도"));
+      return socket.disconnect(true);
+    });
+
     if (!(socket.decoded && socket.decoded.id)) {
       console.error(new Error("검증되지 않은 토큰"));
       return socket.disconnect(true);
@@ -73,6 +85,11 @@ const chatWebSocket = (server, app) => {
       console.error(new Error("검증되지 않은 토큰"));
       return socket.disconnect(true);
     }
+
+    rateLimiter.consume(socket.decoded.id).catch((rateLimiterRes) => {
+      console.error(new Error("너무 많은 connection 시도"));
+      return socket.disconnect(true);
+    });
 
     const { chatRoomId } = socket.handshake.query;
 

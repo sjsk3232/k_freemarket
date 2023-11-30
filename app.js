@@ -59,10 +59,15 @@ app.use(
 );
 app.use(
   rateLimit({
-    windowMs: 10 * 1000, // 10 seconds
-    limit: 100,
-    standardHeaders: "draft-7",
-    legacyHeaders: false,
+    windowMs: 60000,
+    max: 60,
+    delayMs: 500,
+    handler(req, res) {
+      res.status(this.statusCode).json({
+        result: false,
+        message: "1분에 60번 0.5초씩 요청가능",
+      });
+    },
   })
 );
 
