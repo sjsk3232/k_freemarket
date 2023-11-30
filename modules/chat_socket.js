@@ -91,6 +91,12 @@ const chatWebSocket = (server, app) => {
           attributes: ["title"],
           required: false,
         },
+        {
+          model: chat_room,
+          as: "chat_room",
+          attributes: ["id", "seller_unread", "buyer_unread"],
+          required: true,
+        },
       ],
     });
 
@@ -99,25 +105,24 @@ const chatWebSocket = (server, app) => {
       return socket.disconnect(true);
     }
 
-    if (
-      exChatAttend.seller_id !== socket.decoded.id &&
-      exChatAttend.buyer_id !== socket.decoded.id
-    ) {
+    const isSeller = exChatAttend.seller_id === socket.decoded.id;
+    const isBuyer = exChatAttend.buyer_id === socket.decoded.id;
+
+    if (!isSeller && !isBuyer) {
       console.error(new Error("참가하려는 채팅방에 참가할 권한이 없습니다."));
       return socket.disconnect(true);
     }
-    const isSeller = exChatAttend.seller_id === socket.decoded.id;
 
     // 채팅방 참가
     socket.join(chatRoomId);
 
     // chat_room unread 카운트 수정
-    if (isSeller) {
+    if (isSeller && exChatAttend.chat_room.seller_unread > 0) {
       await chat_room.update(
         { seller_unread: 0 },
         { where: { id: exChatAttend.chat_room_id } }
       );
-    } else {
+    } else if (isBuyer && exChatAttend.chat_room.buyer_unread > 0) {
       await chat_room.update(
         { buyer_unread: 0 },
         { where: { id: exChatAttend.chat_room_id } }
