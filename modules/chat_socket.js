@@ -168,9 +168,6 @@ const chatWebSocket = (server, app) => {
         partnerId = exChatAttend.buyer_id;
         count = foundChatRoom.buyer_unread + 1;
         await foundChatRoom.increment("buyer_unread");
-        partnerId = exChatAttend.seller_id;
-        count = foundChatRoom.seller_unread + 1;
-        await foundChatRoom.increment("seller_unread");
       } else {
         partnerId = exChatAttend.seller_id;
         count = foundChatRoom.seller_unread + 1;
