@@ -95,7 +95,12 @@ router.get("/searchPurchaseList", verifyToken, async (req, res, next) => {
     let foundList;
     if (_.isEmpty(pageCondition)) {
       foundList = await transaction.findAll({
-        attributes: ["seller_id", "buyer_id", "created_at"],
+        attributes: [
+          ["id", "transaction_id"],
+          "seller_id",
+          "buyer_id",
+          "created_at",
+        ],
         where: whereCondition,
         order: orderCondition,
         include: [
@@ -239,7 +244,12 @@ router.get("/searchSaleList", verifyToken, async (req, res, next) => {
       });
     } else {
       foundList = await transaction.findAll({
-        attributes: ["seller_id", "buyer_id", "created_at"],
+        attributes: [
+          ["id", "transaction_id"],
+          "seller_id",
+          "buyer_id",
+          "created_at",
+        ],
         where: whereCondition,
         order: orderCondition,
         limit: parseInt(pageCondition.limit),
