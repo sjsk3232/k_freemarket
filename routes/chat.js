@@ -33,6 +33,13 @@ router.post("/enterChatRoom", verifySanctionedToken, async (req, res, next) => {
     }
 
     if (!isEmptyPartner) {
+      if (req.decoded.id === chatPartnerId) {
+        return res.json({
+          result: false,
+          message: "본인과의 채팅방은 생성할 수 없습니다.",
+        });
+      }
+
       if (exProduct && exProduct.seller_id !== chatPartnerId) {
         return res.json({
           result: false,
