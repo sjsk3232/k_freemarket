@@ -117,6 +117,11 @@ const chatWebSocket = (server, app) => {
         { seller_unread: 0 },
         { where: { id: exChatAttend.chat_room_id } }
       );
+    } else {
+      await chat_room.update(
+        { buyer_unread: 0 },
+        { where: { id: exChatAttend.chat_room_id } }
+      );
     }
 
     // chat_message unread 카운트 수정
