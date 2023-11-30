@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const morgan = require("morgan");
 const session = require("express-session");
+const rateLimit = require("express-rate-limit");
 const chatWebSocket = require("./modules/chat_socket");
 const chatRouter = require("./routes/chat");
 const authRouter = require("./routes/auth");
@@ -56,6 +57,15 @@ app.use(
     },
   })
 );
+app.use(
+  rateLimit({
+    windowMs: 10 * 1000, // 10 seconds
+    limit: 100,
+    standardHeaders: "draft-7",
+    legacyHeaders: false,
+  })
+);
+
 app.use(passport.initialize());
 app.use(passport.session());
 
