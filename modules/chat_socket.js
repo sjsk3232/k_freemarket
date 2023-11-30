@@ -55,7 +55,7 @@ const chatWebSocket = (server, app) => {
           required: true,
         },
       ],
-      order: [[col("chat_room.updated_at", "DESC")]],
+      order: [[chat_room, "updated_at", "DESC"]],
     });
 
     // 맨 처음 채팅방 목록 접속시, 참가 중인 채팅방 목록 emit
