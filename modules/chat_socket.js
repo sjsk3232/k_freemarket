@@ -10,7 +10,7 @@ const { db } = require("../models");
 const { chat_attend, chat_room, chat_message, product } = db;
 
 const rateLimiter = new RateLimiterMemory({
-  points: 10, // 5 points
+  points: 100, // 5 points
   duration: 60, // per second
 });
 
