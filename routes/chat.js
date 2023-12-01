@@ -234,24 +234,23 @@ router.patch(
         where: { id: chatRoomId },
       });
 
-      // // 판매자와 구매자 모두 거래 확정시, 거래 내역 추가 및 상품 상태 판매 완료로 수정
-      // if (
-      //   exChatRoom.seller_check &&
-      //   exChatRoom.buyer_check &&
-      //   !isEmptyOrSpaces(exChatAttend.product_id)
-      // ) {
+      // 판매자와 구매자 모두 거래 확정시, 거래 내역 추가 및 상품 상태 판매 완료로 수정
+      if (
+        exChatRoom.seller_check &&
+        exChatRoom.buyer_check &&
+        !isEmptyOrSpaces(exChatAttend.product_id)
+      ) {
+        const newTransaction = transaction.create({
+          product_id: exChatAttend.product_id,
+          seller_id: exChatAttend.seller_id,
+          buyer_id: exChatAttend.buyer_id,
+        });
 
-      //   const newTransaction = transaction.create({
-      //     product_id: exChatAttend.product_id,
-      //     seller_id: exChatAttend.seller_id,
-      //     buyer_id: exChatAttend.buyer_id,
-      //   });
-
-      //   product.update(
-      //     { status: 2 },
-      //     { where: { id: exChatAttend.product_id } }
-      //   );
-      // }
+        product.update(
+          { status: 2 },
+          { where: { id: exChatAttend.product_id } }
+        );
+      }
 
       res.json({
         result: true,
