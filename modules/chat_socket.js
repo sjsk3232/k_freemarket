@@ -201,7 +201,6 @@ const chatWebSocket = (server, app) => {
       for (const socket of sockets) {
         if (socket.decoded.id === partnerId) {
           socket.emit("unread", { chat_room_id: chatRoomId, count });
-          break;
         }
       }
     });
