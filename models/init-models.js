@@ -80,7 +80,7 @@ function initModels(sequelize) {
     as: "transaction",
     foreignKey: "transaction_id",
   });
-  transaction.hasMany(review, { as: "reviews", foreignKey: "transaction_id" });
+  transaction.hasOne(review, { as: "review", foreignKey: "transaction_id" });
   chat_attend.belongsTo(user, { as: "seller", foreignKey: "seller_id" });
   user.hasMany(chat_attend, { as: "chat_attends", foreignKey: "seller_id" });
   chat_attend.belongsTo(user, { as: "buyer", foreignKey: "buyer_id" });

@@ -3,7 +3,7 @@ const _ = require("lodash");
 const { isEmptyOrSpaces } = require("../util");
 const { verifyToken } = require("./middlewares");
 const { db } = require("../models");
-const { transaction, product, product_Image } = db;
+const { transaction, product, product_Image, review } = db;
 
 const router = express.Router();
 
@@ -128,6 +128,12 @@ router.get("/searchPurchaseList", verifyToken, async (req, res, next) => {
                 required: true,
               },
             ],
+          },
+          {
+            model: review,
+            as: "review",
+            attributes: [["id", "review_id"]],
+            require: false,
           },
         ],
       });
