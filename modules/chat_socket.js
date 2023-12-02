@@ -46,6 +46,16 @@ const chatWebSocket = (server, app) => {
       return socket.disconnect(true);
     }
 
+    const foundSockets = await chatRoomList.fetchSockets();
+    for (const foundSocket of foundSockets) {
+      if (
+        foundSocket.decoded.id === socket.decoded.id &&
+        foundSocket.id !== socket.id
+      ) {
+        foundSocket.disconnect();
+      }
+    }
+
     // 생성된 채팅방 목록 검색
     const foundAttends = await chat_attend.findAll({
       where: {
@@ -94,6 +104,7 @@ const chatWebSocket = (server, app) => {
     const { chatRoomId } = socket.handshake.query;
 
     if (isEmptyOrSpaces(chatRoomId)) {
+      console.log("chatRoom", chatRoomId);
       console.error(new Error("참가하려는 채팅방 ID가 입력되지 않았습니다."));
       return socket.disconnect(true);
     }
@@ -128,6 +139,18 @@ const chatWebSocket = (server, app) => {
     if (!isSeller && !isBuyer) {
       console.error(new Error("참가하려는 채팅방에 참가할 권한이 없습니다."));
       return socket.disconnect(true);
+    }
+
+    const foundSockets = await chatRoom.in(chatRoomId).fetchSockets();
+    for (const foundSocket of foundSockets) {
+      console.log("foundId", foundSocket.id, foundSocket.decoded.id);
+      if (
+        foundSocket.decoded.id === socket.decoded.id &&
+        foundSocket.id !== socket.id
+      ) {
+        console.log("disconnect: ", foundSocket.decoded.id, socket.id);
+        foundSocket.disconnect();
+      }
     }
 
     // 채팅방 참가
@@ -176,7 +199,7 @@ const chatWebSocket = (server, app) => {
 
       // 대화 상대가 채팅방에 참가 중일시, 메시지 전송 후 종료
       if (numOfClients > 1) {
-        return socket.to(chatRoomId).emit("newMessage", newMessage);
+        return chatRoom.to(chatRoomId).emit("newMessage", newMessage);
       }
 
       const foundChatRoom = await chat_room.findOne({
@@ -201,10 +224,11 @@ const chatWebSocket = (server, app) => {
       for (const socket of sockets) {
         if (socket.decoded.id === partnerId) {
           socket.emit("unread", { chat_room_id: chatRoomId, count });
+          break;
         }
       }
 
-      // socket.emit("newMessage", newMessage);
+      socket.emit("newMessage", newMessage);
     });
 
     socket.on("disconnect", () => {

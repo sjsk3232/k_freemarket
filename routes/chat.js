@@ -30,6 +30,13 @@ router.post("/enterChatRoom", verifySanctionedToken, async (req, res, next) => {
           message: "입력하신 상품 ID와 일치하는 상품이 없습니다.",
         });
       }
+
+      if (exProduct.seller_id === req.decoded.id) {
+        return res.json({
+          result: false,
+          message: "본인과의 채팅방은 생성할 수 없습니다.",
+        });
+      }
     }
 
     if (!isEmptyPartner) {
@@ -142,6 +149,7 @@ router.post("/enterChatRoom", verifySanctionedToken, async (req, res, next) => {
     for (const socket of sockets) {
       if (socket.decoded.id === partnerId) {
         socket.emit("newChatRoom", newChatAttend);
+        break;
       }
     }
 
