@@ -142,7 +142,6 @@ router.post("/enterChatRoom", verifySanctionedToken, async (req, res, next) => {
     for (const socket of sockets) {
       if (socket.decoded.id === partnerId) {
         socket.emit("newChatRoom", newChatAttend);
-        break;
       }
     }
 

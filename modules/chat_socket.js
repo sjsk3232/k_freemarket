@@ -203,6 +203,8 @@ const chatWebSocket = (server, app) => {
           socket.emit("unread", { chat_room_id: chatRoomId, count });
         }
       }
+
+      // socket.emit("newMessage", newMessage);
     });
 
     socket.on("disconnect", () => {
