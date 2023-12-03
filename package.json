@@ -4,7 +4,8 @@
   "description": "freemarket API 서버",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Yesung",
