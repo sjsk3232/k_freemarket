@@ -176,6 +176,14 @@ router.patch(
   "/change",
   verifySanctionedToken,
   uploadImages,
+  (req, res, next) => {
+    if (req.uploadError)
+      return res.json({
+        result: false,
+        message: req.uploadError.message,
+      });
+    next();
+  },
   async (req, res, next) => {
     const { productId, title, content, price, category, status } = req.body;
 
