@@ -44,6 +44,14 @@ router.post(
   "/sell",
   verifySanctionedToken,
   uploadImages,
+  (req, res, next) => {
+    if (req.uploadError)
+      return res.json({
+        result: false,
+        message: req.uploadError.message,
+      });
+    next();
+  },
   async (req, res, next) => {
     const thumbnailLeng =
       req.files && req.files["thumbnail"] ? req.files["thumbnail"].length : 0;
