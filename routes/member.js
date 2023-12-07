@@ -34,15 +34,15 @@ router.post("/enroll", async (req, res, next) => {
     }
 
     // 중복 이메일 검사
-    // const exEmail = await user.findOne({
-    //   where: {
-    //     email,
-    //   },
-    // });
+    const exEmail = await user.findOne({
+      where: {
+        email,
+      },
+    });
 
-    // if(exEmail) {
-    //   return res.json({ result: false, message: "중복된 이메일입니다." });
-    // }
+    if (exEmail) {
+      return res.json({ result: false, message: "중복된 이메일입니다." });
+    }
 
     const exSanction = await user_sanction.findOne({
       where: {
@@ -141,17 +141,17 @@ router.patch("/change", verifyToken, async (req, res, next) => {
     if (!isEmptyOrSpaces(password)) hash = await bcrypt.hash(password, 12);
 
     // 중복 이메일 검사
-    // if (!isEmptyOrSpaces(email)) {
-    //   const exEmail = await user.findOne({
-    //     where: {
-    //       email,
-    //     },
-    //   });
+    if (!isEmptyOrSpaces(email)) {
+      const exEmail = await user.findOne({
+        where: {
+          email,
+        },
+      });
 
-    //   if (exEmail) {
-    //     return res.json({ result: false, message: "중복된 이메일입니다." });
-    //   }
-    // }
+      if (exEmail) {
+        return res.json({ result: false, message: "중복된 이메일입니다." });
+      }
+    }
 
     // 회원 정보 업데이트
     await user.update(
@@ -274,23 +274,6 @@ router.get("/search", async (req, res, next) => {
 
     console.log("findCondition: ", findCondition);
     const foundUsers = await user.findAll(findCondition);
-
-    // let foundUsers;
-    // if (_.isEmpty(pageCondition)) {
-    //   foundUsers = await user.findAll({
-    //     attributes: ["id", "email", "name", "mobile", "rating"],
-    //     where: whereCondition,
-    //     order: orderCondition,
-    //   });
-    // } else {
-    //   foundUsers = await user.findAll({
-    //     attributes: ["id", "email", "name", "mobile", "rating"],
-    //     where: whereCondition,
-    //     order: orderCondition,
-    //     limit: parseInt(pageCondition.limit),
-    //     offset: parseInt(pageCondition.offset),
-    //   });
-    // }
 
     const totalCount = await user.count({
       where: whereCondition,
