@@ -4,7 +4,7 @@ const {
   verifySocketSanctionedToken,
 } = require("../routes/middlewares");
 const { isEmptyOrSpaces } = require("../util");
-const { Op, col } = require("sequelize");
+const { Op } = require("sequelize");
 const { db } = require("../models");
 const { chat_attend, chat_room, chat_message, product } = db;
 
@@ -12,7 +12,7 @@ const { chat_attend, chat_room, chat_message, product } = db;
 const chatWebSocket = (server, app) => {
   const io = SocketIO(server, {
     cors: {
-      origin: "*",
+      origin: process.env.FRONT_ADDRESS,
       credentials: true,
     },
   });
@@ -34,6 +34,7 @@ const chatWebSocket = (server, app) => {
       return socket.disconnect(true);
     }
 
+    // 이미 접속 중인 소켓 존재 여부 검사
     const foundSockets = await chatRoomList.fetchSockets();
     for (const foundSocket of foundSockets) {
       if (
@@ -177,7 +178,7 @@ const chatWebSocket = (server, app) => {
         chat_room_id: chatRoomId,
         sender_id: socket.decoded.id,
         content: data.message,
-        unread: numOfClients < 2 ? 1 : 0,
+        unread: numOfClients < 2 ? numOfClients - 1 : 0,
       });
 
       // 대화 상대가 채팅방에 참가 중일시, 메시지 전송 후 종료
